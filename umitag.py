@@ -38,7 +38,7 @@ def fq(file):
 # Create molecular ID by concatenating molecular barcode and beginning of r1 and r2 read sequences
 def get_umi(r1, r2, i1, i2):
     molecular_barcode = i2[1][8:16]
-    return '%s_%s_%s' % (molecular_barcode, r1[1][0:6], r2[1][0:6])
+    return '%s' % (molecular_barcode)
 
 def umitag(read1, read2, index1, index2, read1_out, read2_out, out_dir):
 
@@ -57,8 +57,9 @@ def umitag(read1, read2, index1, index2, read1_out, read2_out, out_dir):
         # Create molecular ID by concatenating molecular barcode and beginning of r1 read sequence
         molecular_id = get_umi(r1, r2, i1, i2)
         # Add molecular id to read headers
-        r1[0] = '%s %s\n' % (r1[0].rstrip(), molecular_id)
-        r2[0] = '%s %s\n' % (r2[0].rstrip(), molecular_id)
+        rname=r1[0].split()[0]
+        r1[0] = '%s_%s\n' % (rname, molecular_id)
+        r2[0] = '%s_%s\n' % (rname, molecular_id)
         for line in r1:
             r1_umitagged.write(line)
         for line in r2:
@@ -89,7 +90,7 @@ def main():
     args = vars(parser.parse_args())
     out_dir = args['out_dir']
 
-    umitag(read1_in, read2_in, index1, index2, read1_out, read2_out, out_dir)
+    umitag(args['read1_in'], args['read2_in'], args['index1'], args['index2'], args['read1_out'], args['read2_out'], args['out_dir'])
 
 if __name__ == '__main__':
     main()
